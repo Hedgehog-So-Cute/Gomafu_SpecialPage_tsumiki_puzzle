@@ -612,6 +612,63 @@
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
     }
+
+    /* ── LYRICS CTA ── */
+    .lyrics-cta {
+      display: block;
+      text-decoration: none;
+      padding: 4rem 2.5rem;
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      background: var(--bg-card);
+      text-align: center;
+      color: var(--ink);
+      transition: background 0.25s, transform 0.2s, border-color 0.25s;
+      margin-top: 1.5rem;
+    }
+    .lyrics-cta:hover {
+      background: oklch(30% 0.018 65);
+      transform: translateY(-4px);
+      border-color: oklch(80% 0.14 55);
+    }
+    .lyrics-cta-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 1.8rem;
+    }
+    .lyrics-cta-titles {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .lyrics-cta-sep {
+      color: var(--rule);
+      font-size: 0.55em;
+      font-weight: 300;
+    }
+    .lyrics-cta-arrow {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      transition: color 0.2s;
+    }
+    .lyrics-cta:hover .lyrics-cta-arrow {
+      color: var(--accent);
+    }
+    @media (max-width: 720px) {
+      .lyrics-cta { padding: 2.8rem 1.5rem; }
+      .lyrics-cta-titles { gap: 0.8rem; }
+    }
   </style>
 </head>
 <body>
@@ -980,6 +1037,27 @@
     </div>
   </section>
 
+  <!-- CHAPTER 6: LYRICS -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <span class="chapter-num">06</span>
+      <div>
+        <p class="chapter-subtitle">Lyrics</p>
+        <h2 class="chapter-title">歌詞</h2>
+      </div>
+    </div>
+
+    <a class="lyrics-cta" href="lyrics.html">
+      <p class="lyrics-cta-eyebrow">tsumiki / puzzle — full lyrics</p>
+      <div class="lyrics-cta-titles">
+        <span>tsumiki</span>
+        <span class="lyrics-cta-sep">/</span>
+        <span>puzzle</span>
+      </div>
+      <p class="lyrics-cta-arrow">歌詞を読む →</p>
+    </a>
+  </section>
+
 </div><!-- /page -->
 
 <!-- CODA -->
@@ -1007,6 +1085,7 @@
 <footer>
   <span>© 2026 Gomafu... All Rights Reserved.</span>
   <div class="footer-links">
+    <a href="lyrics.html">歌詞</a>
     <a href="https://x.com/gomafu_nana?s=21" target="_blank" rel="noopener">X</a>
     <a href="https://www.youtube.com/@gomafu2444" target="_blank" rel="noopener">YouTube</a>
   </div>
