@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyrics — tsumiki / puzzle</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: light only; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream:     #f5efe4;
+  --ink:       #3a2e28;
+  --muted:     #9a8e84;
+  --rule:      rgba(58,46,40,.1);
+  --accent:    #96604a;
+  --accent-lt: rgba(150,96,74,.1);
+}
+body.song-puzzle {
+  --accent:    #5c7fa0;
+  --accent-lt: rgba(92,127,160,.1);
+}
+
+html { font-size: 16px; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Shippori Mincho', serif;
+  overflow: hidden;
+  height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+.blob {
+  position: fixed;
+  border-radius: 60% 40% 55% 45% / 45% 60% 40% 55%;
+  filter: blur(80px);
+  opacity: 0;
+  pointer-events: none; z-index: 0;
+  transition: opacity 1.2s ease, background 1.2s ease;
+  animation: drift 26s ease-in-out infinite alternate;
+}
+.blob-1 { width: 65vw; height: 55vw; top: -15vw;    left: -14vw; animation-delay: 0s;   }
+.blob-2 { width: 55vw; height: 44vw; bottom: -12vw; right:-12vw; animation-delay: -12s; }
+
+body.song-tsumiki .blob-1 { background: #e8c4a8; opacity: .16; }
+body.song-tsumiki .blob-2 { background: #e2b8b8; opacity: .13; }
+body.song-puzzle  .blob-1 { background: #b8cedd; opacity: .18; }
+body.song-puzzle  .blob-2 { background: #a8c4d8; opacity: .14; }
+
+@keyframes drift {
+  from { transform: translate(0,0); }
+  to   { transform: translate(3vw,2vw); }
+}
+
+/* ── Tab bar ── */
+.tab-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  display: flex;
+  background: rgba(245,239,228,.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--rule);
+  z-index: 100;
+}
+.tab-back {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 1.1rem;
+  border-right: 1px solid var(--rule);
+  text-decoration: none;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .75rem;
+  letter-spacing: .18em;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color .3s;
+}
+.tab-back:hover { color: var(--accent); }
+.tab {
+  flex: 1;
+  background: none; border: none;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .88rem;
+  letter-spacing: .22em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .4s, background .4s;
+}
+.tab:first-of-type { border-right: 1px solid var(--rule); }
+.tab.active {
+  color: var(--accent);
+  background: var(--accent-lt);
+}
+
+/* ── Scroll wrapper ── */
+#scrollWrap {
+  position: fixed;
+  top: 48px; left: 0; right: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 1;
+  scroll-behavior: smooth;
+}
+
+/* ── Song panel ── */
+.song-panel { display: none; }
+.song-panel.active { display: block; }
+
+/* ── Song header ── */
+.song-header {
+  text-align: center;
+  padding: 100px 24px 80px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .9s ease, transform .9s ease;
+}
+.song-header.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.song-header .eyebrow {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: .7rem;
+  letter-spacing: .34em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.song-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.8rem, 7vw, 4.4rem);
+  font-weight: 300;
+  letter-spacing: .12em;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.song-header .credit {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: .76rem;
+  letter-spacing: .18em;
+  color: var(--muted);
+}
+.header-rule {
+  width: 32px; height: 1px;
+  background: var(--accent);
+  margin: 30px auto 0;
+  transition: background .5s;
+}
+
+/* ── Lyrics layout ── */
+.lyrics-wrap {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 32px 140px;
+}
+
+/* verse block */
+.vb {
+  margin-bottom: 5rem;
+  text-align: center;
+}
+
+/* chorus block */
+.vb.chorus,
+.vb.chorus-c {
+  margin: 5.5rem auto;
+  padding: 2.4rem 1.8rem;
+  background: var(--accent-lt);
+  border-radius: 2px;
+  transition: background .6s;
+}
+
+/* single lyric line */
+.ln {
+  display: block;
+  font-size: .95rem;
+  line-height: 2.6;
+  letter-spacing: .07em;
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.ln.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* colour emphasis */
+.k {
+  color: var(--accent);
+  font-weight: 500;
+  transition: color .5s;
+}
+
+/* section divider */
+.vdivider {
+  width: 16px; height: 1px;
+  background: var(--rule);
+  margin: 0 auto 5rem;
+  opacity: 0;
+  transition: opacity .7s ease;
+}
+.vdivider.visible { opacity: 1; }
+
+/* ── Footer ── */
+.song-footer {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 48px 32px 120px;
+  text-align: center;
+  border-top: 1px solid var(--rule);
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.song-footer.visible { opacity: 1; }
+.song-footer p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .76rem;
+  letter-spacing: .18em;
+  color: var(--muted);
+  line-height: 2.4;
+}
+.song-footer strong { color: var(--ink); font-weight: 400; }
+</style>
+
+</head>
+<body class="song-tsumiki">
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="tab-bar">
+  <a class="tab-back" href="index.html">← Liner Notes</a>
+  <button class="tab active" onclick="switchSong('tsumiki',this)">tsumiki</button>
+  <button class="tab"        onclick="switchSong('puzzle',this)">puzzle</button>
+</div>
+
+<div id="scrollWrap">
+
+  <!-- ══════ tsumiki ══════ -->
+
+  <section class="song-panel active" id="panel-tsumiki">
+
+    <div class="song-header">
+      <p class="eyebrow">Track 01</p>
+      <h1>tsumiki</h1>
+      <p class="credit">作詞・作曲 Kenta</p>
+      <div class="header-rule"></div>
+    </div>
+
+    <div class="lyrics-wrap">
+
+      <div class="vb">
+        <span class="ln"><span class="k">積み木</span>の山　ぼくの手の中</span>
+        <span class="ln">色とりどりの　<span class="k">夢</span>の欠片</span>
+        <span class="ln">何にでもなれる　そう信じてる</span>
+        <span class="ln">幼い心の　<span class="k">無限</span>の未来</span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb">
+        <span class="ln">四角い笑顔　丸い冒険</span>
+        <span class="ln">崩しては重ねた物語</span>
+        <span class="ln">小さな両手に　<span class="k">大きな世界</span></span>
+        <span class="ln">描き尽くせない　ぼくの<span class="k">夢</span></span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb chorus">
+        <span class="ln"><span class="k">積み木</span>の塔　空に伸びて</span>
+        <span class="ln">小さな両手は　<span class="k">無限</span>を描く</span>
+        <span class="ln">ときめく心が指し示す<span class="k">光</span></span>
+        <span class="ln">ぼくは<span class="k">創る</span>　積み木の<span class="k">世界</span></span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb">
+        <span class="ln">大人になって　囚われてる</span>
+        <span class="ln">積み上げるだけが　正解だと</span>
+        <span class="ln"><span class="k">崩す喜び</span>　並べる自由</span>
+        <span class="ln">忘れていたんだ　あの日のぼくを</span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb chorus">
+        <span class="ln"><span class="k">積み木</span>の城　空に築け</span>
+        <span class="ln">疲れた両手で　<span class="k">無限</span>を描け</span>
+        <span class="ln">揺れる心が見出した<span class="k">光</span></span>
+        <span class="ln">ぼくは<span class="k">創る</span>　積み木な未来</span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb chorus">
+        <span class="ln">ぼくは<span class="k">創る</span>　<span class="k">積み木</span>の世界</span>
+      </div>
+
+    </div>
+
+    <div class="song-footer">
+      <p>
+        <strong>Vocal</strong> ぽそ　／　<strong>Guitar</strong> Kenta<br>
+        <strong>Sound Engineer</strong> MAN　／　<strong>Cover Designer</strong> リト（ritmos）
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ══════ puzzle ══════ -->
+
+  <section class="song-panel" id="panel-puzzle">
+
+    <div class="song-header">
+      <p class="eyebrow">Track 02</p>
+      <h1>puzzle</h1>
+      <p class="credit">作詞・作曲 Kenta</p>
+      <div class="header-rule"></div>
+    </div>
+
+    <div class="lyrics-wrap">
+
+      <div class="vb">
+        <span class="ln">向かい合って見下ろした<span class="k">パズル</span>のピースは</span>
+        <span class="ln">同じ箱の中にいても少しずつ<span class="k">違う</span></span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb">
+        <span class="ln">似ているから余計に分かり合えなくて</span>
+        <span class="ln">無理にはめ込んで<span class="k">心</span>を削ってしまう</span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb">
+        <span class="ln"><span class="k">欠けてる</span>って思ったり</span>
+        <span class="ln"><span class="k">歪んでる</span>って思うけど</span>
+        <span class="ln">その<span class="k">形</span>のままで</span>
+        <span class="ln">意味があるから</span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb chorus-c">
+        <span class="ln">うまくいかない夜も</span>
+        <span class="ln"><span class="k">間違い</span>なんかじゃない</span>
+        <span class="ln">ぶつかって出来た傷も</span>
+        <span class="ln">君だけの<span class="k">輪郭</span>になるから</span>
+        <span class="ln">世界はその<span class="k">違い</span>で</span>
+        <span class="ln">少しずつ出来ている</span>
+        <span class="ln">だからきっとその<span class="k">パズル</span>もうまくいく</span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb">
+        <span class="ln">机の端、迷子の<span class="k">パズル</span>のピースは</span>
+        <span class="ln">裏返ったまま出番を待っていた</span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb">
+        <span class="ln">不安に思ったり</span>
+        <span class="ln">怖いと思うけど</span>
+        <span class="ln">ほかのピースじゃなくて</span>
+        <span class="ln"><span class="k">君だけ</span>が埋められる場所</span>
+      </div>
+
+      <div class="vdivider"></div>
+
+      <div class="vb chorus-c">
+        <span class="ln">震えた手で置いた<span class="k">ピース</span>も</span>
+        <span class="ln"><span class="k">間違い</span>なんかじゃない</span>
+        <span class="ln">その<span class="k">隙間</span>を埋めることで</span>
+        <span class="ln">明日の<span class="k">輪郭</span>になるから</span>
+        <span class="ln">世界はその<span class="k">違い</span>を</span>
+        <span class="ln">抱きしめて出来ている</span>
+        <span class="ln">だからきっとその<span class="k">パズル</span>は<span class="k">美しい</span></span>
+      </div>
+
+    </div>
+
+    <div class="song-footer">
+      <p>
+        <strong>Vocal</strong> ぽそ　／　<strong>Guitar</strong> Kenta<br>
+        <strong>Sound Engineer</strong> MAN　／　<strong>Cover Designer</strong> リト（ritmos）
+      </p>
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    root: document.getElementById('scrollWrap'),
+    threshold: 0.25
+  });
+
+  function initObserver(panel) {
+    const header = panel.querySelector('.song-header');
+    if (header) io.observe(header);
+
+    panel.querySelectorAll('.vb').forEach(vb => {
+      vb.querySelectorAll('.ln').forEach((ln, i) => {
+        ln.style.transitionDelay = `${i * 0.1}s`;
+        io.observe(ln);
+      });
+    });
+
+    panel.querySelectorAll('.vdivider').forEach(d => io.observe(d));
+
+    const footer = panel.querySelector('.song-footer');
+    if (footer) io.observe(footer);
+  }
+
+  initObserver(document.querySelector('.song-panel.active'));
+
+  function switchSong(id, btn) {
+    document.querySelectorAll('.song-panel').forEach(p => {
+      p.classList.remove('active');
+      p.querySelectorAll('.ln, .song-header, .vdivider, .song-footer')
+        .forEach(el => {
+          el.classList.remove('visible');
+          el.style.transitionDelay = '';
+        });
+    });
+
+    const panel = document.getElementById('panel-' + id);
+    panel.classList.add('active');
+
+    panel.querySelectorAll('.vb').forEach(vb => {
+      vb.querySelectorAll('.ln').forEach((ln, i) => {
+        ln.style.transitionDelay = `${i * 0.1}s`;
+      });
+    });
+
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.body.className = 'song-' + id;
+    document.getElementById('scrollWrap').scrollTop = 0;
+
+    setTimeout(() => initObserver(panel), 50);
+  }
+</script>
+
+</body>
+</html>
