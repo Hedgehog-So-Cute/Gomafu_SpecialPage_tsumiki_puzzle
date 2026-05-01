@@ -695,6 +695,11 @@
       outline-offset: 4px;
       border-radius: 2px;
     }
+    /* 歌詞セクションは折りたたみ無効 */
+    .chapter:last-of-type .chapter-header {
+      cursor: default;
+      user-select: auto;
+    }
     </style>
 </head>
 <body>
@@ -1079,14 +1084,13 @@
   </section>
 
   <!-- CHAPTER 6: LYRICS -->
-  <section class="chapter collapsed">
-    <div class="chapter-header" role="button" aria-expanded="false">
+  <section class="chapter">
+    <div class="chapter-header">
       <span class="chapter-num">06</span>
       <div>
         <p class="chapter-subtitle">Lyrics</p>
         <h2 class="chapter-title">歌詞</h2>
       </div>
-        <span class="chapter-toggle-icon" aria-hidden="true">▼</span>
     </div>
       <div class="chapter-body">
 
@@ -1165,7 +1169,7 @@
 
   // セクション折りたたみ機能（デフォルト閉じ）
   window.addEventListener('load', () => {
-    document.querySelectorAll('.chapter .chapter-header').forEach(header => {
+    document.querySelectorAll('.chapter:not(:last-of-type) .chapter-header').forEach(header => {
       const chapter = header.closest('.chapter');
       const body = chapter.querySelector('.chapter-body');
 
