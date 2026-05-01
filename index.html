@@ -213,7 +213,7 @@
 
     .chapter-header {
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: auto 1fr auto;
       align-items: baseline;
       gap: 1.5rem;
       margin-bottom: 3.5rem;
@@ -669,7 +669,33 @@
       .lyrics-cta { padding: 2.8rem 1.5rem; }
       .lyrics-cta-titles { gap: 0.8rem; }
     }
-  </style>
+
+    /* 折りたたみ機能 */
+    .chapter-header {
+      cursor: pointer;
+      user-select: none;
+    }
+    .chapter-toggle-icon {
+      margin-left: auto;
+      font-size: 0.75rem;
+      opacity: 0.6;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+    .chapter.collapsed .chapter-toggle-icon {
+      transform: rotate(-90deg);
+    }
+    .chapter-body {
+      overflow: hidden;
+      transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .chapter-header:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+    </style>
 </head>
 <body>
 
@@ -703,14 +729,16 @@
 <div class="page">
 
   <!-- CHAPTER 1: KENTA -->
-  <section class="chapter">
-    <div class="chapter-header">
+  <section class="chapter collapsed">
+    <div class="chapter-header" role="button" aria-expanded="false">
       <span class="chapter-num">01</span>
       <div>
         <p class="chapter-subtitle">Guitarist / Songwriter</p>
         <h2 class="chapter-title">Kenta</h2>
       </div>
+        <span class="chapter-toggle-icon" aria-hidden="true">▼</span>
     </div>
+      <div class="chapter-body">
 
     <div class="portrait">
       <img src="uploads/KentaSolo.jpeg" alt="Kenta">
@@ -731,7 +759,7 @@
     </div>
 
     <div class="photo-full">
-      <img src="https://gomafu-liner-jkscrudg.manus.space/manus-storage/puzzle_photo_da2aa715.jpg" alt="puzzleモチーフ">
+      <img src="uploads/puzzle-complete.jpeg" alt="puzzleモチーフ">
       <p class="photo-caption">puzzleモチーフ — 繋がりの中での個</p>
     </div>
 
@@ -766,17 +794,20 @@
         </div>
       </div>
     </div>
+      </div>
   </section>
 
   <!-- CHAPTER 2: POSO -->
-  <section class="chapter">
-    <div class="chapter-header">
+  <section class="chapter collapsed">
+    <div class="chapter-header" role="button" aria-expanded="false">
       <span class="chapter-num">02</span>
       <div>
         <p class="chapter-subtitle">Vocalist / Songwriter</p>
         <h2 class="chapter-title">ぽそ</h2>
       </div>
+        <span class="chapter-toggle-icon" aria-hidden="true">▼</span>
     </div>
+      <div class="chapter-body">
 
     <div class="portrait">
       <img src="uploads/PosoSOlo.png" alt="ぽそ">
@@ -856,20 +887,23 @@
       </div>
     </div>
 
+      </div>
   </section>
 
   <!-- CHAPTER 3: MAN -->
-  <section class="chapter">
-    <div class="chapter-header">
+  <section class="chapter collapsed">
+    <div class="chapter-header" role="button" aria-expanded="false">
       <span class="chapter-num">03</span>
       <div>
         <p class="chapter-subtitle">Recording Engineer</p>
         <h2 class="chapter-title">MAN</h2>
       </div>
+        <span class="chapter-toggle-icon" aria-hidden="true">▼</span>
     </div>
+      <div class="chapter-body">
 
     <div class="photo-full">
-      <img src="https://gomafu-liner-jkscrudg.manus.space/manus-storage/IMG_8741_24c01a49.webp" alt="Recording session at crotchet / studio">
+      <img src="uploads/recording-studio.jpeg" alt="Recording session at crotchet / studio">
       <p class="photo-caption">Recording session at crotchet / studio</p>
     </div>
     <div class="qa-block">
@@ -917,20 +951,23 @@
     </div>
 
     <div class="photo-full">
-      <img src="https://gomafu-liner-jkscrudg.manus.space/manus-storage/A9012873-0007-4046-8D07-3C11D693DBC0_1_201_a_0587189b.jpeg" alt="メンバーのクローズアップ" style="max-height:520px; object-fit:cover;">
+      <img src="uploads/member-closeup.jpeg" alt="メンバーのクローズアップ" style="max-height:520px; object-fit:cover;">
       <p class="photo-caption">Members — close up</p>
     </div>
+      </div>
   </section>
 
   <!-- CHAPTER 4: RECORDING -->
-  <section class="chapter">
-    <div class="chapter-header">
+  <section class="chapter collapsed">
+    <div class="chapter-header" role="button" aria-expanded="false">
       <span class="chapter-num">04</span>
       <div>
         <p class="chapter-subtitle">Recording Approach</p>
         <h2 class="chapter-title">手法とアプローチ</h2>
       </div>
+        <span class="chapter-toggle-icon" aria-hidden="true">▼</span>
     </div>
+      <div class="chapter-body">
 
     <!-- Track 1 -->
     <div class="track-intro">
@@ -990,20 +1027,23 @@
     </div>
 
     <div class="photo-full">
-      <img src="https://gomafu-liner-jkscrudg.manus.space/manus-storage/0EACDBA2-D6FB-430C-AD66-C0F224E16B5D_1_201_a_95752e4a.jpeg" alt="スタジオ機材">
+      <img src="uploads/studio-equipment.jpeg" alt="スタジオ機材">
       <p class="photo-caption">Studio equipment — crotchet / studio</p>
     </div>
+      </div>
   </section>
 
   <!-- CHAPTER 5: SOUND IDENTITY -->
-  <section class="chapter">
-    <div class="chapter-header">
+  <section class="chapter collapsed">
+    <div class="chapter-header" role="button" aria-expanded="false">
       <span class="chapter-num">05</span>
       <div>
         <p class="chapter-subtitle">Sound Identity</p>
         <h2 class="chapter-title">Gomafu... の不変の核</h2>
       </div>
+        <span class="chapter-toggle-icon" aria-hidden="true">▼</span>
     </div>
+      <div class="chapter-body">
 
     <div class="qa-block">
       <div>
@@ -1035,17 +1075,20 @@
         </div>
       </div>
     </div>
+      </div>
   </section>
 
   <!-- CHAPTER 6: LYRICS -->
-  <section class="chapter">
-    <div class="chapter-header">
+  <section class="chapter collapsed">
+    <div class="chapter-header" role="button" aria-expanded="false">
       <span class="chapter-num">06</span>
       <div>
         <p class="chapter-subtitle">Lyrics</p>
         <h2 class="chapter-title">歌詞</h2>
       </div>
+        <span class="chapter-toggle-icon" aria-hidden="true">▼</span>
     </div>
+      <div class="chapter-body">
 
     <a class="lyrics-cta" href="lyrics.html">
       <p class="lyrics-cta-eyebrow">tsumiki / puzzle — full lyrics</p>
@@ -1056,6 +1099,7 @@
       </div>
       <p class="lyrics-cta-arrow">歌詞を読む →</p>
     </a>
+      </div>
   </section>
 
 </div><!-- /page -->
@@ -1064,7 +1108,7 @@
 <div class="coda">
   <h2 class="coda-title">Gomafu...</h2>
   <div class="coda-image">
-    <img src="https://gomafu-liner-jkscrudg.manus.space/manus-storage/Gomafu_bf9fb94d.webp" alt="Gomafu...のメンバー">
+    <img src="uploads/gomafu-members.jpeg" alt="Gomafu...のメンバー">
   </div>
   <p class="coda-message">大切に作りました。聴いてくれてありがとう。<br>これからも、よろしくおねがいします。</p>
   <p class="coda-message-credit">— ぽそ &amp; Kenta</p>
@@ -1118,6 +1162,47 @@
 
     targets.forEach(function (el) { io.observe(el); });
   })();
+
+  // セクション折りたたみ機能（デフォルト閉じ）
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.chapter .chapter-header').forEach(header => {
+      const chapter = header.closest('.chapter');
+      const body = chapter.querySelector('.chapter-body');
+
+      // デフォルト: 閉じた状態でheightを0に固定
+      body.style.height = '0px';
+
+      // キーボード操作対応
+      header.setAttribute('tabindex', '0');
+      header.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.click(); }
+      });
+
+      header.addEventListener('click', () => {
+        const isCollapsed = chapter.classList.contains('collapsed');
+
+        if (isCollapsed) {
+          // 展開: クラスを先に外してからheightをアニメーション
+          chapter.classList.remove('collapsed');
+          header.setAttribute('aria-expanded', 'true');
+          requestAnimationFrame(() => {
+            body.style.height = body.scrollHeight + 'px';
+            body.addEventListener('transitionend', () => {
+              body.style.height = 'auto';
+            }, { once: true });
+          });
+        } else {
+          // 折りたたみ: 現在のheightを固定してから0にアニメーション
+          body.style.height = body.scrollHeight + 'px';
+          requestAnimationFrame(() => {
+            body.style.height = '0px';
+            chapter.classList.add('collapsed');
+            header.setAttribute('aria-expanded', 'false');
+          });
+        }
+      });
+    });
+  });
 </script>
 
 </body>
