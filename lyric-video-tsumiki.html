@@ -440,7 +440,7 @@ function advance() {
       sectionEls[curSec].style.display = 'none';
       curSec++;
       curLine = 0;
-      sectionEls[curSec].style.display = '';
+      sectionEls[curSec].style.display = 'block';
       revealStep(0);
       updateIndicator();
       busy = false;
@@ -458,7 +458,7 @@ function back() {
     sectionEls[curSec].style.display = 'none';
     curSec--;
     curLine = 0;
-    sectionEls[curSec].style.display = '';
+    sectionEls[curSec].style.display = 'block';
     revealStep(0);
     updateIndicator();
     busy = false;
@@ -524,7 +524,7 @@ document.addEventListener('keydown', e => {
 
 // Initialise
 sectionEls.forEach(el => { el.style.display = 'none'; });
-sectionEls[0].style.display = '';
+sectionEls[0].style.display = 'block';
 revealStep(0);
 updateIndicator();
 setTimeout(() => hint.classList.add('hidden'), 5500);
