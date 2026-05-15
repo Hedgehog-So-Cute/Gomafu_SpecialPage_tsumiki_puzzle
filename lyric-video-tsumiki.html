@@ -11,16 +11,12 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --cream:     #f5efe4;
-    --ink:       #3a2e28;
-    --ink-soft:  #6b5a52;
-    --terra:     #96604a;
-    --terra-dim: rgba(150, 96, 74, 0.15);
-    --blob-a:    rgba(180, 145, 120, 0.18);
-    --blob-b:    rgba(200, 175, 150, 0.12);
-    --blob-c:    rgba(150, 120, 100, 0.10);
-    --reveal-dur: 1.6s;
-    --dissolve-dur: 0.8s;
+    --cream:       #f5efe4;
+    --ink:         #3a2e28;
+    --ink-soft:    #7a6860;
+    --terra:       #96604a;
+    --reveal-dur:  1.8s;
+    --dissolve-dur: 0.85s;
   }
 
   html, body {
@@ -31,586 +27,469 @@
     font-family: 'Shippori Mincho', serif;
   }
 
-  /* ── watercolor background ─────────────────────────────── */
-  #bg {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 0;
-  }
+  /* ── watercolor background ─────────────────────────── */
+  #bg { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
 
-  .blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(90px);
-  }
-
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); }
   .blob-a {
-    width: 60vw; height: 60vw;
-    top: -15%; left: -10%;
-    background: radial-gradient(circle, rgba(180,145,120,0.22) 0%, transparent 70%);
-    animation: drift-a 32s ease-in-out infinite alternate;
+    width: 65vw; height: 65vw; top: -15%; left: -10%;
+    background: radial-gradient(circle, rgba(180,145,120,.22) 0%, transparent 70%);
+    animation: driftA 34s ease-in-out infinite alternate;
   }
   .blob-b {
-    width: 50vw; height: 50vw;
-    top: 30%; right: -12%;
-    background: radial-gradient(circle, rgba(200,170,140,0.18) 0%, transparent 70%);
-    animation: drift-b 28s ease-in-out infinite alternate;
+    width: 52vw; height: 52vw; top: 30%; right: -12%;
+    background: radial-gradient(circle, rgba(200,170,140,.18) 0%, transparent 70%);
+    animation: driftB 28s ease-in-out infinite alternate;
   }
   .blob-c {
-    width: 40vw; height: 40vw;
-    bottom: -10%; left: 20%;
-    background: radial-gradient(circle, rgba(160,130,110,0.14) 0%, transparent 70%);
-    animation: drift-c 36s ease-in-out infinite alternate;
+    width: 44vw; height: 44vw; bottom: -10%; left: 18%;
+    background: radial-gradient(circle, rgba(160,130,110,.14) 0%, transparent 70%);
+    animation: driftC 38s ease-in-out infinite alternate;
   }
+  @keyframes driftA { from{transform:translate(0,0) scale(1)} to{transform:translate(-4vw,14vh) scale(.95)} }
+  @keyframes driftB { from{transform:translate(0,0) scale(1)} to{transform:translate(4vw,10vh) scale(1.1)} }
+  @keyframes driftC { from{transform:translate(0,0) scale(1)} to{transform:translate(-6vw,-8vh) scale(1.06)} }
 
-  @keyframes drift-a {
-    0%   { transform: translate(0, 0) scale(1); }
-    50%  { transform: translate(6vw, 8vh) scale(1.08); }
-    100% { transform: translate(-4vw, 14vh) scale(0.95); }
-  }
-  @keyframes drift-b {
-    0%   { transform: translate(0, 0) scale(1); }
-    50%  { transform: translate(-8vw, -6vh) scale(1.05); }
-    100% { transform: translate(4vw, 10vh) scale(1.1); }
-  }
-  @keyframes drift-c {
-    0%   { transform: translate(0, 0) scale(1); }
-    50%  { transform: translate(10vw, -4vh) scale(0.92); }
-    100% { transform: translate(-6vw, -8vh) scale(1.06); }
-  }
+  /* ── stacking blocks canvas ────────────────────────── */
+  #blocks { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
 
-  /* paper texture overlay */
-  #texture {
-    position: fixed;
-    inset: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.035;
-  }
+  /* ── paper texture ─────────────────────────────────── */
+  #texture { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; opacity: .038; }
 
-  /* subtle vignette */
+  /* ── vignette ──────────────────────────────────────── */
   #vignette {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 55%, rgba(90,70,60,0.18) 100%);
-    pointer-events: none;
-    z-index: 2;
+    position: fixed; inset: 0; pointer-events: none; z-index: 5;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(90,70,60,.2) 100%);
   }
 
-  /* ── stage ─────────────────────────────────────────────── */
+  /* ── lyric stage ────────────────────────────────────── */
   #stage {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative; z-index: 10;
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
   }
 
   .section {
-    position: absolute;
-    width: 100%;
-    max-width: 820px;
-    padding: 0 8vw;
-    text-align: center;
-    pointer-events: none;
-    user-select: none;
+    position: absolute; width: 100%; max-width: 800px;
+    padding: 0 9vw; text-align: center;
+    display: none; pointer-events: none; user-select: none;
   }
 
-  /* ── text animations ────────────────────────────────────── */
+  /* ── ink animations ─────────────────────────────────── */
   @keyframes inkReveal {
-    0% {
-      filter: blur(22px);
-      opacity: 0;
-      letter-spacing: 0.55em;
-      transform: scale(1.05);
-    }
-    15% {
-      opacity: 0.25;
-    }
-    45% {
-      opacity: 0.65;
-      filter: blur(7px);
-      letter-spacing: 0.18em;
-    }
-    75% {
-      filter: blur(2px);
-      letter-spacing: 0.09em;
-      transform: scale(1.008);
-    }
-    100% {
-      filter: blur(0);
-      opacity: 1;
-      letter-spacing: 0.06em;
-      transform: scale(1);
-    }
+    0%   { filter: blur(22px); opacity: 0; letter-spacing: .55em; transform: scale(1.05); }
+    18%  { opacity: .25; }
+    55%  { filter: blur(6px); letter-spacing: .14em; transform: scale(1.01); }
+    80%  { filter: blur(1.5px); }
+    100% { filter: blur(0); opacity: 1; letter-spacing: .07em; transform: scale(1); }
   }
-
   @keyframes inkDissolve {
-    0% {
-      filter: blur(0);
-      opacity: 1;
-      letter-spacing: 0.06em;
-      transform: scale(1);
-    }
-    40% {
-      opacity: 0.5;
-      filter: blur(5px);
-      letter-spacing: 0.2em;
-    }
-    100% {
-      filter: blur(18px);
-      opacity: 0;
-      letter-spacing: 0.5em;
-      transform: scale(1.04);
-    }
+    0%   { filter: blur(0); opacity: 1; letter-spacing: .07em; transform: scale(1); }
+    100% { filter: blur(18px); opacity: 0; letter-spacing: .45em; transform: scale(1.04); }
   }
-
   @keyframes titleReveal {
-    0%   { filter: blur(28px); opacity: 0; letter-spacing: 0.7em; transform: scale(1.06); }
-    30%  { opacity: 0.3; }
-    70%  { filter: blur(4px); letter-spacing: 0.18em; }
-    100% { filter: blur(0); opacity: 1; letter-spacing: 0.22em; transform: scale(1); }
+    0%   { filter: blur(32px); opacity: 0; letter-spacing: .75em; transform: scale(1.07); }
+    25%  { opacity: .25; }
+    65%  { filter: blur(6px); letter-spacing: .28em; }
+    100% { filter: blur(0); opacity: 1; letter-spacing: .3em; transform: scale(1); }
   }
 
+  /* ── lines ──────────────────────────────────────────── */
   .line {
     display: block;
-    font-size: clamp(1.15rem, 3.2vw, 1.85rem);
-    font-weight: 400;
-    line-height: 2.2;
-    color: var(--ink);
-    opacity: 0;
+    font-size: clamp(1.15rem, 3.2vw, 1.95rem);
+    font-weight: 400; line-height: 2.5;
+    color: var(--ink); opacity: 0;
     will-change: filter, opacity, letter-spacing, transform;
   }
+  .line.visible { animation: inkReveal var(--reveal-dur) cubic-bezier(.16,1,.3,1) forwards; }
 
-  .line.reveal {
-    animation: inkReveal var(--reveal-dur) cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
+  .chorus .line { color: var(--terra); font-size: clamp(1.2rem, 3.5vw, 2.1rem); font-weight: 500; }
+  .outro  .line { font-size: clamp(1.4rem, 4.2vw, 2.6rem); font-weight: 300; }
 
-  .line.dissolve {
-    animation: inkDissolve var(--dissolve-dur) ease-in forwards;
-  }
-
-  /* chorus lines */
-  .chorus .line {
-    color: var(--terra);
-    font-size: clamp(1.2rem, 3.5vw, 2rem);
-    font-weight: 500;
-  }
-
-  /* title section */
+  /* title */
   .title-section .song-title {
     display: block;
-    font-family: 'Shippori Mincho', serif;
-    font-size: clamp(2.2rem, 7vw, 4.5rem);
-    font-weight: 300;
-    letter-spacing: 0.22em;
-    color: var(--ink);
-    opacity: 0;
+    font-size: clamp(2.8rem, 9vw, 5.5rem);
+    font-weight: 300; letter-spacing: .3em; line-height: 1.3;
+    color: var(--ink); opacity: 0;
     will-change: filter, opacity, letter-spacing, transform;
-    line-height: 1.3;
   }
-
-  .title-section .song-title.reveal {
-    animation: titleReveal 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
+  .title-section .song-title.visible { animation: titleReveal 2.6s cubic-bezier(.16,1,.3,1) forwards; }
 
   .title-section .credit {
     display: block;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(0.75rem, 1.8vw, 1rem);
-    font-weight: 300;
-    letter-spacing: 0.25em;
-    color: var(--ink-soft);
-    margin-top: 1.4em;
-    opacity: 0;
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(.72rem, 1.7vw, .95rem);
+    font-weight: 300; letter-spacing: .28em;
+    color: var(--ink-soft); margin-top: 1.5em; opacity: 0;
     will-change: filter, opacity, letter-spacing, transform;
   }
+  .title-section .credit.visible { animation: inkReveal 2s cubic-bezier(.16,1,.3,1) forwards; }
 
-  .title-section .credit.reveal {
-    animation: inkReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  /* outro */
-  .outro .line {
-    font-size: clamp(1.4rem, 4vw, 2.5rem);
-    font-weight: 300;
-    color: var(--ink);
-    letter-spacing: 0.08em;
-  }
-
-  /* section divider (thin rule between groups of lines) */
-  .spacer { height: 0.6em; display: block; }
-
-  /* ── UI chrome ──────────────────────────────────────────── */
+  /* ── UI chrome ──────────────────────────────────────── */
   #hint {
-    position: fixed;
-    top: 2.2vh;
-    left: 3vw;
-    z-index: 50;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(0.6rem, 1.3vw, 0.8rem);
-    color: var(--ink-soft);
-    opacity: 0.6;
-    letter-spacing: 0.12em;
-    transition: opacity 1.2s ease;
-    line-height: 1.8;
-    pointer-events: none;
+    position: fixed; top: 2.5vh; left: 3vw; z-index: 50;
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(.58rem, 1.3vw, .78rem);
+    color: var(--ink-soft); opacity: .55; letter-spacing: .12em;
+    transition: opacity 1.5s ease; line-height: 1.9; pointer-events: none;
   }
   #hint.hidden { opacity: 0; }
 
   #indicator {
-    position: fixed;
-    bottom: 3.5vh;
-    right: 3.5vw;
-    z-index: 50;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(0.55rem, 1.1vw, 0.72rem);
-    color: var(--ink-soft);
-    opacity: 0.45;
-    letter-spacing: 0.15em;
-    pointer-events: none;
+    position: fixed; bottom: 3.5vh; right: 3.5vw; z-index: 50;
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(.53rem, 1.1vw, .7rem);
+    color: var(--ink-soft); opacity: .38; letter-spacing: .15em; pointer-events: none;
   }
 
-  /* auto-advance progress bar */
   #progress-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    height: 1.5px;
-    width: 0%;
-    background: var(--terra);
-    opacity: 0;
-    z-index: 50;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
+    position: fixed; bottom: 0; left: 0; height: 1.5px; width: 0%;
+    background: var(--terra); opacity: 0; z-index: 50;
+    transition: opacity .4s ease; pointer-events: none;
   }
+  #progress-bar.active { opacity: .45; }
 
-  #progress-bar.active {
-    opacity: 0.5;
-  }
-
-  /* auto-mode indicator */
   #auto-label {
-    position: fixed;
-    bottom: 3.5vh;
-    left: 3vw;
-    z-index: 50;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(0.55rem, 1.1vw, 0.72rem);
-    color: var(--terra);
-    opacity: 0;
-    letter-spacing: 0.15em;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
+    position: fixed; bottom: 3.5vh; left: 3vw; z-index: 50;
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(.53rem, 1.1vw, .7rem);
+    color: var(--terra); opacity: 0; letter-spacing: .15em;
+    transition: opacity .5s ease; pointer-events: none;
   }
-  #auto-label.visible { opacity: 0.6; }
+  #auto-label.visible { opacity: .55; }
 </style>
 </head>
 <body>
 
-<!-- watercolor background -->
 <div id="bg">
   <div class="blob blob-a"></div>
   <div class="blob blob-b"></div>
   <div class="blob blob-c"></div>
 </div>
 
-<!-- paper noise texture -->
+<canvas id="blocks"></canvas>
+
 <svg id="texture" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="paper" x="0%" y="0%" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch" result="noise"/>
-      <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
-      <feBlend in="SourceGraphic" in2="grayNoise" mode="multiply"/>
-    </filter>
-  </defs>
+  <filter id="paper" x="0%" y="0%" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="4" stitchTiles="stitch" result="n"/>
+    <feColorMatrix type="saturate" values="0" in="n" result="g"/>
+    <feBlend in="SourceGraphic" in2="g" mode="multiply"/>
+  </filter>
   <rect width="100%" height="100%" filter="url(#paper)" fill="white"/>
 </svg>
 
 <div id="vignette"></div>
-
-<!-- lyric stage -->
 <div id="stage"></div>
 
-<!-- UI -->
-<div id="hint">
-  ← → <span style="letter-spacing:0.05em">or</span> Space &nbsp;·&nbsp; セクション移動<br>
-  F &nbsp;·&nbsp; フルスクリーン<br>
-  A &nbsp;·&nbsp; 自動進行
-</div>
-
+<div id="hint">← → or Space &nbsp;·&nbsp; 進める<br>F &nbsp;·&nbsp; フルスクリーン<br>A &nbsp;·&nbsp; 自動進行</div>
 <div id="indicator"></div>
 <div id="progress-bar"></div>
 <div id="auto-label">auto</div>
 
 <script>
+'use strict';
+
+// ── LYRICS DATA ──────────────────────────────────────────
 const SECTIONS = [
-  {
-    type: 'title',
-    lines: ['tsumiki'],
-    credit: '作詞・作曲　Kenta',
-  },
-  {
-    type: 'verse',
-    lines: [
-      '積み木の山　ぼくの手の中',
-      '色とりどりの　夢の欠片',
-      '何にでもなれる　そう信じてる',
-      '幼い心の　無限の未来',
-    ],
-  },
-  {
-    type: 'verse',
-    lines: [
-      '四角い笑顔　丸い冒険',
-      '崩しては重ねた物語',
-      '小さな両手に　大きな世界',
-      '描き尽くせない　ぼくの夢',
-    ],
-  },
-  {
-    type: 'chorus',
-    lines: [
-      '積み木の塔　空に伸びて',
-      '小さな両手は　無限を描く',
-      'ときめく心が指し示す光',
-      'ぼくは創る　積み木の世界',
-    ],
-  },
-  {
-    type: 'verse',
-    lines: [
-      '大人になって　囚われてる',
-      '積み上げるだけが　正解だと',
-      '崩す喜び　並べる自由',
-      '忘れていたんだ　あの日のぼくを',
-    ],
-  },
-  {
-    type: 'chorus',
-    lines: [
-      '積み木の城　空に築け',
-      '疲れた両手で　無限を描け',
-      '揺れる心が見出した光',
-      'ぼくは創る　積み木な未来',
-    ],
-  },
-  {
-    type: 'outro',
-    lines: ['ぼくは創る　積み木の世界'],
-  },
+  { type: 'title',  lines: ['tsumiki'], credit: '作詞・作曲　Kenta' },
+  { type: 'verse',  lines: ['積み木の山　ぼくの手の中', '色とりどりの　夢の欠片', '何にでもなれる　そう信じてる', '幼い心の　無限の未来'] },
+  { type: 'verse',  lines: ['四角い笑顔　丸い冒険', '崩しては重ねた物語', '小さな両手に　大きな世界', '描き尽くせない　ぼくの夢'] },
+  { type: 'chorus', lines: ['積み木の塔　空に伸びて', '小さな両手は　無限を描く', 'ときめく心が指し示す光', 'ぼくは創る　積み木の世界'] },
+  { type: 'verse',  lines: ['大人になって　囚われてる', '積み上げるだけが　正解だと', '崩す喜び　並べる自由', '忘れていたんだ　あの日のぼくを'] },
+  { type: 'chorus', lines: ['積み木の城　空に築け', '疲れた両手で　無限を描け', '揺れる心が見出した光', 'ぼくは創る　積み木な未来'] },
+  { type: 'outro',  lines: ['ぼくは創る　積み木の世界'] },
 ];
 
-const SECTION_DURATION = 9000; // ms for auto-advance
-const STAGGER = 220; // ms per line
-const REVEAL_DURATION = 1600;
-const DISSOLVE_DURATION = 800;
+// ── CANVAS: STACKING BLOCKS ──────────────────────────────
+const canvas = document.getElementById('blocks');
+const ctx    = canvas.getContext('2d');
 
-const stage = document.getElementById('stage');
-const indicator = document.getElementById('indicator');
-const progressBar = document.getElementById('progress-bar');
-const autoLabel = document.getElementById('auto-label');
-const hint = document.getElementById('hint');
+// Block palette — muted watercolor toy-block hues
+const PALETTE = [
+  '#c97a5e',  // terracotta
+  '#ddb87a',  // warm amber
+  '#8dafc4',  // powder blue
+  '#9abea8',  // sage green
+  '#c4a882',  // warm sand
+  '#c8a8b8',  // dusty rose
+  '#a8c0d4',  // sky blue
+  '#d4c4a0',  // cream yellow
+];
 
-let current = 0;
-let transitioning = false;
-let autoMode = false;
-let autoTimer = null;
-let progressAnim = null;
+const COLUMNS = [];
+const BLOCKS  = [];
+let   lastSpawn = 0;
+const SPAWN_MS  = 3200; // ms between new blocks
 
-// ── DOM builder ───────────────────────────────────────────
-
-function buildSection(data, index) {
-  const el = document.createElement('div');
-  el.className = 'section';
-  el.dataset.index = index;
-
-  if (data.type === 'title') {
-    el.classList.add('title-section');
-    const title = document.createElement('span');
-    title.className = 'song-title';
-    title.textContent = data.lines[0];
-    el.appendChild(title);
-
-    if (data.credit) {
-      const cred = document.createElement('span');
-      cred.className = 'credit';
-      cred.textContent = data.credit;
-      el.appendChild(cred);
-    }
-  } else {
-    if (data.type === 'chorus') el.classList.add('chorus');
-    if (data.type === 'outro')  el.classList.add('outro');
-
-    data.lines.forEach((text, i) => {
-      const line = document.createElement('span');
-      line.className = 'line';
-      line.textContent = text;
-      line.dataset.i = i;
-      el.appendChild(line);
-    });
-  }
-
-  return el;
-}
-
-// pre-build all sections
-const sectionEls = SECTIONS.map((data, i) => {
-  const el = buildSection(data, i);
-  stage.appendChild(el);
-  return el;
-});
-
-// ── animation helpers ──────────────────────────────────────
-
-function revealSection(el, data) {
-  if (data.type === 'title') {
-    const title = el.querySelector('.song-title');
-    const cred  = el.querySelector('.credit');
-    title.classList.remove('reveal');
-    void title.offsetWidth;
-    title.style.animationDelay = '0ms';
-    title.classList.add('reveal');
-
-    if (cred) {
-      cred.classList.remove('reveal');
-      void cred.offsetWidth;
-      cred.style.animationDelay = '700ms';
-      cred.classList.add('reveal');
-    }
-  } else {
-    const lines = el.querySelectorAll('.line');
-    lines.forEach((line, i) => {
-      line.classList.remove('reveal', 'dissolve');
-      line.style.opacity = '0';
-      void line.offsetWidth;
-      line.style.animationDelay = `${i * STAGGER}ms`;
-      line.classList.add('reveal');
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  BLOCKS.length  = 0;
+  COLUMNS.length = 0;
+  const num     = Math.max(5, Math.floor(canvas.width / 145));
+  const spacing = canvas.width / (num + 1);
+  for (let i = 0; i < num; i++) {
+    COLUMNS.push({
+      x:     spacing * (i + 1) + (Math.random() - .5) * spacing * .24,
+      nextY: canvas.height - 22,  // floor position
     });
   }
 }
 
-function dissolveSection(el, data, onDone) {
-  if (data.type === 'title') {
-    const els = el.querySelectorAll('.song-title, .credit');
-    let count = els.length;
-    els.forEach(e => {
-      e.classList.remove('reveal');
-      void e.offsetWidth;
-      e.style.animationDelay = '0ms';
-      e.style.animation = `inkDissolve ${DISSOLVE_DURATION}ms ease-in forwards`;
-      e.addEventListener('animationend', () => {
-        count--;
-        if (count === 0 && onDone) onDone();
-      }, { once: true });
-    });
-  } else {
-    const lines = el.querySelectorAll('.line');
-    let count = lines.length;
-    lines.forEach((line, i) => {
-      line.classList.remove('reveal');
-      void line.offsetWidth;
-      line.style.animationDelay = `${i * 50}ms`;
-      line.classList.add('dissolve');
-      line.addEventListener('animationend', () => {
-        count--;
-        if (count === 0 && onDone) onDone();
-      }, { once: true });
-    });
-  }
-}
+function spawnBlock(ts) {
+  if (ts - lastSpawn < SPAWN_MS) return;
+  lastSpawn = ts;
 
-function updateIndicator() {
-  const total = SECTIONS.length;
-  indicator.textContent = `${current + 1} / ${total}`;
-}
+  // only use columns that haven't stacked past ~58% height
+  const maxH  = canvas.height * .58;
+  const avail = COLUMNS.filter(c => c.nextY > maxH);
+  if (!avail.length) return;
 
-// ── section navigation ────────────────────────────────────
+  const col = avail[Math.floor(Math.random() * avail.length)];
+  const bw  = 46 + Math.random() * 28;
+  const bh  = 34 + Math.random() * 20;
+  const tY  = col.nextY - bh;
+  col.nextY = tY - 4;  // small gap between blocks
 
-function showSection(index, animate = true) {
-  if (transitioning) return;
-  if (index < 0 || index >= SECTIONS.length) return;
-
-  const prevEl   = sectionEls[current];
-  const prevData = SECTIONS[current];
-  const nextEl   = sectionEls[index];
-  const nextData = SECTIONS[index];
-
-  if (!animate || current === index) {
-    // instant switch (initial)
-    sectionEls.forEach(el => { el.style.display = 'none'; });
-    nextEl.style.display = '';
-    revealSection(nextEl, nextData);
-    current = index;
-    updateIndicator();
-    return;
-  }
-
-  transitioning = true;
-
-  dissolveSection(prevEl, prevData, () => {
-    prevEl.style.display = 'none';
-    current = index;
-    nextEl.style.display = '';
-    revealSection(nextEl, nextData);
-    updateIndicator();
-    transitioning = false;
-
-    if (autoMode) scheduleAuto();
+  BLOCKS.push({
+    x:     col.x - bw / 2 + (Math.random() - .5) * 7,
+    y:     canvas.height + bh + 50,  // start below screen
+    tY,    // target Y (settles here)
+    bw, bh,
+    r:     bw * .12,  // corner radius
+    color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+    alpha: 0,
+    rot:   (Math.random() - .5) * .032,   // slight tilt
+    fp:    Math.random() * Math.PI * 2,   // float phase
+    fs:    .007 + Math.random() * .005,   // float speed
+    done:  false,
   });
 }
 
-function next() {
-  if (current < SECTIONS.length - 1) showSection(current + 1, true);
+function drawBlock(b) {
+  const cx = b.x + b.bw / 2, cy = b.y + b.bh / 2;
+  ctx.save();
+  ctx.globalAlpha   = b.alpha;
+  ctx.shadowColor   = 'rgba(70,50,35,.16)';
+  ctx.shadowBlur    = 11;
+  ctx.shadowOffsetY = 3;
+  ctx.translate(cx, cy);
+  ctx.rotate(b.rot + (b.done ? Math.sin(b.fp * .55) * .006 : 0));
+  ctx.beginPath();
+  ctx.roundRect(-b.bw / 2, -b.bh / 2, b.bw, b.bh, b.r);
+  ctx.fillStyle = b.color;
+  ctx.fill();
+  ctx.restore();
 }
 
-function prev() {
-  if (current > 0) showSection(current - 1, true);
+function rafLoop(ts) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  spawnBlock(ts);
+  for (const b of BLOCKS) {
+    if (!b.done) {
+      b.y    += (b.tY - b.y) * .034;   // ease toward target
+      b.alpha += (.78 - b.alpha) * .04; // fade in
+      if (Math.abs(b.y - b.tY) < .6) { b.y = b.tY; b.done = true; }
+    } else {
+      b.fp += b.fs;
+      b.y   = b.tY + Math.sin(b.fp) * 1.8;  // gentle float
+    }
+    drawBlock(b);
+  }
+  requestAnimationFrame(rafLoop);
 }
 
-// ── auto-advance ──────────────────────────────────────────
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+requestAnimationFrame(rafLoop);
 
+// ── LYRIC DISPLAY (line by line) ─────────────────────────
+const DISSOLVE_DUR  = 850;
+const AUTO_LINE_MS  = 5500;  // ms per line in auto mode
+
+const stageEl    = document.getElementById('stage');
+const indicator  = document.getElementById('indicator');
+const progressBar = document.getElementById('progress-bar');
+const autoLabel  = document.getElementById('auto-label');
+const hint       = document.getElementById('hint');
+
+let curSec      = 0;
+let curLine     = 0;
+let busy        = false;
+let autoMode    = false;
+let autoTimer   = null;
+let creditTimer = null;
+
+// Build DOM for all sections
+const sectionEls = SECTIONS.map(data => {
+  const el = document.createElement('div');
+  el.className = 'section';
+  if (data.type === 'chorus')     el.classList.add('chorus');
+  else if (data.type === 'outro') el.classList.add('outro');
+  else if (data.type === 'title') el.classList.add('title-section');
+
+  if (data.type === 'title') {
+    const t = document.createElement('span');
+    t.className   = 'song-title';
+    t.textContent = data.lines[0];
+    el.appendChild(t);
+    if (data.credit) {
+      const c = document.createElement('span');
+      c.className   = 'credit';
+      c.textContent = data.credit;
+      el.appendChild(c);
+    }
+  } else {
+    data.lines.forEach(text => {
+      const ln = document.createElement('span');
+      ln.className   = 'line';
+      ln.textContent = text;
+      el.appendChild(ln);
+    });
+  }
+
+  stageEl.appendChild(el);
+  return el;
+});
+
+function stepsFor(si) {
+  // title counts as 1 step (credit appears automatically)
+  return SECTIONS[si].type === 'title' ? 1 : SECTIONS[si].lines.length;
+}
+
+function updateIndicator() {
+  indicator.textContent = `${curSec + 1} / ${SECTIONS.length}`;
+}
+
+function revealStep(step) {
+  const data = SECTIONS[curSec];
+  const el   = sectionEls[curSec];
+
+  if (data.type === 'title') {
+    const title = el.querySelector('.song-title');
+    title.classList.remove('visible');
+    void title.offsetWidth;
+    title.classList.add('visible');
+    // credit drifts in automatically after the title settles
+    const cred = el.querySelector('.credit');
+    if (cred) {
+      cred.classList.remove('visible');
+      cred.style.animation = '';
+      if (creditTimer) clearTimeout(creditTimer);
+      creditTimer = setTimeout(() => { cred.classList.add('visible'); creditTimer = null; }, 1100);
+    }
+  } else {
+    const lines = el.querySelectorAll('.line');
+    const ln = lines[step];
+    if (!ln) return;
+    ln.classList.remove('visible');
+    ln.style.animation = '';
+    void ln.offsetWidth;
+    ln.classList.add('visible');
+  }
+}
+
+function dissolveSection(onDone) {
+  if (creditTimer) { clearTimeout(creditTimer); creditTimer = null; }
+  const el   = sectionEls[curSec];
+  const data = SECTIONS[curSec];
+
+  const sel   = data.type === 'title' ? '.song-title, .credit' : '.line';
+  const items = Array.from(el.querySelectorAll(sel))
+    .filter(e => e.classList.contains('visible'));
+
+  if (!items.length) { onDone(); return; }
+
+  let remaining = items.length;
+  items.forEach(e => {
+    e.classList.remove('visible');
+    void e.offsetWidth;
+    e.style.animation = `inkDissolve ${DISSOLVE_DUR}ms ease-in forwards`;
+    e.addEventListener('animationend', () => {
+      e.style.animation = '';
+      if (--remaining === 0) onDone();
+    }, { once: true });
+  });
+}
+
+function cleanSection(el) {
+  el.querySelectorAll('.line, .song-title, .credit').forEach(e => {
+    e.classList.remove('visible');
+    e.style.animation = '';
+  });
+}
+
+function advance() {
+  if (busy) return;
+
+  if (curLine < stepsFor(curSec) - 1) {
+    // show next line within the same section
+    curLine++;
+    revealStep(curLine);
+    updateIndicator();
+    scheduleAuto();
+  } else {
+    // all lines shown — move to next section
+    if (curSec >= SECTIONS.length - 1) return;
+    busy = true;
+    clearAutoTimer();
+    dissolveSection(() => {
+      cleanSection(sectionEls[curSec]);
+      sectionEls[curSec].style.display = 'none';
+      curSec++;
+      curLine = 0;
+      sectionEls[curSec].style.display = '';
+      revealStep(0);
+      updateIndicator();
+      busy = false;
+      scheduleAuto();
+    });
+  }
+}
+
+function back() {
+  if (busy || curSec === 0) return;
+  busy = true;
+  clearAutoTimer();
+  dissolveSection(() => {
+    cleanSection(sectionEls[curSec]);
+    sectionEls[curSec].style.display = 'none';
+    curSec--;
+    curLine = 0;
+    sectionEls[curSec].style.display = '';
+    revealStep(0);
+    updateIndicator();
+    busy = false;
+    scheduleAuto();
+  });
+}
+
+// Auto-advance
 function scheduleAuto() {
   clearAutoTimer();
   if (!autoMode) return;
-
   let elapsed = 0;
-  const tick = 50;
   progressBar.style.width = '0%';
-
-  progressAnim = setInterval(() => {
-    elapsed += tick;
-    const pct = Math.min((elapsed / SECTION_DURATION) * 100, 100);
-    progressBar.style.width = pct + '%';
-    if (elapsed >= SECTION_DURATION) {
-      clearAutoTimer();
-      if (current < SECTIONS.length - 1) next();
-      else {
-        autoMode = false;
-        setAutoUI(false);
-      }
-    }
-  }, tick);
+  autoTimer = setInterval(() => {
+    elapsed += 50;
+    progressBar.style.width = Math.min(elapsed / AUTO_LINE_MS * 100, 100) + '%';
+    if (elapsed >= AUTO_LINE_MS) { clearAutoTimer(); advance(); }
+  }, 50);
 }
 
 function clearAutoTimer() {
-  if (progressAnim) { clearInterval(progressAnim); progressAnim = null; }
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
   progressBar.style.width = '0%';
 }
 
-function setAutoUI(on) {
-  if (on) {
+function toggleAuto() {
+  autoMode = !autoMode;
+  if (autoMode) {
     progressBar.classList.add('active');
     autoLabel.classList.add('visible');
+    scheduleAuto();
   } else {
     progressBar.classList.remove('active');
     autoLabel.classList.remove('visible');
@@ -618,50 +497,37 @@ function setAutoUI(on) {
   }
 }
 
-function toggleAuto() {
-  autoMode = !autoMode;
-  setAutoUI(autoMode);
-  if (autoMode) scheduleAuto();
-}
-
-// ── keyboard ──────────────────────────────────────────────
-
+// Keyboard controls
 document.addEventListener('keydown', e => {
   switch (e.key) {
-    case 'ArrowRight':
     case ' ':
+    case 'ArrowRight':
       e.preventDefault();
       clearAutoTimer();
-      next();
+      advance();
       if (autoMode) scheduleAuto();
       break;
     case 'ArrowLeft':
       e.preventDefault();
-      clearAutoTimer();
-      prev();
-      if (autoMode) scheduleAuto();
+      back();
       break;
-    case 'f':
-    case 'F':
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-      else document.exitFullscreen().catch(() => {});
+    case 'f': case 'F':
+      document.fullscreenElement
+        ? document.exitFullscreen().catch(() => {})
+        : document.documentElement.requestFullscreen().catch(() => {});
       break;
-    case 'a':
-    case 'A':
+    case 'a': case 'A':
       toggleAuto();
       break;
   }
 });
 
-// hide hint after 5 s
-setTimeout(() => hint.classList.add('hidden'), 5000);
-
-// ── init ──────────────────────────────────────────────────
-
+// Initialise
 sectionEls.forEach(el => { el.style.display = 'none'; });
 sectionEls[0].style.display = '';
-revealSection(sectionEls[0], SECTIONS[0]);
+revealStep(0);
 updateIndicator();
+setTimeout(() => hint.classList.add('hidden'), 5500);
 </script>
 </body>
 </html>
